@@ -10,6 +10,7 @@ from gi.repository import Gio, GLib, Gtk
 
 from . import charts
 from .analysis import TrackStats, compute_stats, fmt_distance, fmt_pace, fmt_seconds
+from .csv_export import suggest_csv_name, write_csv
 from .gpx_parser import Track, parse_gpx
 
 
@@ -51,6 +52,10 @@ class GpxAnalyzerWindow(Gtk.ApplicationWindow):
         open_button = Gtk.Button(label="Ouvrir…")
         open_button.connect("clicked", self.on_open)
         header.pack_start(open_button)
+
+        export_button = Gtk.Button(label="Exporter CSV…")
+        export_button.connect("clicked", self.on_export_csv)
+        header.pack_start(export_button)
 
         self.track_selector = Gtk.DropDown()
         self.track_selector.set_visible(False)
@@ -107,6 +112,36 @@ class GpxAnalyzerWindow(Gtk.ApplicationWindow):
             return
         paths = [f.get_path() for f in files if f.get_path()]
         self.load_paths(paths)
+
+    def on_export_csv(self, button: Gtk.Button) -> None:
+        entry = self.current
+        if entry is None:
+            return
+        dialog = Gtk.FileDialog()
+        csv_filter = Gtk.FileFilter()
+        csv_filter.set_name("Fichier CSV")
+        csv_filter.add_pattern("*.csv")
+        filters = Gio.ListStore.new(Gtk.FileFilter)
+        filters.append(csv_filter)
+        dialog.set_filters(filters)
+        dialog.set_initial_name(suggest_csv_name(entry[0].name))
+        dialog.save(self, None, self.on_csv_saved)
+
+    def on_csv_saved(self, dialog: Gtk.FileDialog, result: Gio.AsyncResult) -> None:
+        entry = self.current
+        if entry is None:
+            return
+        try:
+            saved = dialog.save_finish(result)
+        except GLib.Error:
+            return
+        path = saved.get_path()
+        if not path:
+            return
+        try:
+            write_csv(path, entry[0], entry[1], self.weight)
+        except OSError as error:
+            self.show_error(f"Export CSV impossible : {error}")
 
     def load_paths(self, paths: list[str]) -> None:
         errors = []

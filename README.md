@@ -12,6 +12,9 @@ mode texte sans interface graphique. Conçue et testée sous Gentoo Linux / GNOM
 - **Kilométriques** : temps, allure et D+ par kilomètre (dernier segment partiel inclus).
 - **Profil** : profil d'altitude rempli + allure par kilomètre, dessinés avec Cairo.
 - **Carte** : parcours projeté avec point de départ (vert) et d'arrivée (rouge).
+- **Export CSV** : bouton « Exporter CSV… » dans la barre d'en-tête, ou CLI
+  `gpx-analyzer --csv analyse.csv trace.gpx`. Le fichier s'ouvre directement dans
+  LibreOffice Calc (séparateur « ; », virgule décimale, UTF-8 avec BOM).
 - Mode CLI : `gpx-analyzer --texte sortie.gpx` affiche le même rapport dans le terminal
   (fonctionne aussi sans serveur graphique).
 
@@ -43,6 +46,7 @@ gpx-analyzer                        # interface graphique
 gpx-analyzer trace1.gpx trace2.gpx  # ouverture directe de fichiers
 gpx-analyzer --texte trace1.gpx     # rapport texte dans le terminal
 gpx-analyzer --texte trace.gpx --poids 75
+gpx-analyzer --csv analyse.csv trace1.gpx trace2.gpx  # un CSV par trace
 ```
 
 Raccourci de bureau (intégration GNOME) :
