@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Analyse GPX
+Comment=Analyse de traces GPX de running
+Exec=gpx-analyzer
+Categories=Utility;Graphics;Sports;
+Terminal=false
